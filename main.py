@@ -1,6 +1,7 @@
 from bcc import BPF
 from time import sleep
 
+"""bcc dir"""
 # strace -e bpf, ioctl, perf_event_open bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @[comm] = count(); }'
 # strace look at system calls as invoked
 # -e bpf...: interested in bpf system calls...
@@ -27,6 +28,21 @@ from time import sleep
 # make -j$(nproc)
 # sudo make install
 
+"""linux dir"""
+# sudo apt update
+# sudo apt install linux-headers-$(uname -r)
+# sudo apt install binutils-dev
+# sudo apt install git make clang llvm libelf-dev libbfd-dev libcap-dev libzstd-dev binutils-dev libbpf-dev
+# git clone --depth 1 --branch v6.1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+# cd linux/tools/bpf/bpftool
+# make
+# sudo make install
+# sudo bpftool feature probe
+
+"""install on debian"""
+# sudo apt install bcc
+# deactivate
+# sudo python3 main.py
 
 
 # compilation
@@ -42,7 +58,7 @@ b = BPF(text=program)
 # trigger program each time a new program is created: clone
 # k is triggered on the entry to a function in the kernel
 # what is the kernel function that gets invoked when clone a new process
-clone = b.get_syscall_fname("clone")
-b.attach_kprob(event=clone, fn_name="hello")
+clone = b.get_syscall_fnname("clone")
+b.attach_kprobe(event=clone, fn_name="hello_world")
 # trace what the kernel writes in program variable
 b.trace_print()
