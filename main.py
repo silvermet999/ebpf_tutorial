@@ -1,5 +1,4 @@
 from bcc import BPF
-from time import sleep
 
 """bcc dir"""
 # strace -e bpf, ioctl, perf_event_open bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @[comm] = count(); }'
@@ -39,6 +38,7 @@ from time import sleep
 # sudo make install
 # sudo bpftool feature probe
 
+
 """install on debian"""
 # sudo apt install bcc
 # deactivate
@@ -46,10 +46,14 @@ from time import sleep
 
 
 # compilation
+# get user id (in the bottom 4 bytes)
 program = """
 int hello_world(void *ctx) {
-bpf_trace_printk("Hello\\n");
-return 0;
+    u64 uid;
+    
+    uid =bpf_get_current_uid_gid() & 0xFFFFFFFF;
+    bpf_trace_printk("id: %d\\n", uid);
+    return 0;
 }
 """
 
