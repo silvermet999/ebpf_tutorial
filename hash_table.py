@@ -13,7 +13,8 @@ BPF_HASH(clones); /* define hash table */
 int hello_world(void *ctx) {
     u64 uid;
     u64 counter = 0;
-    u64 *p;    
+    u64 *p;
+    
     /* helper function to obtain user ID that triggered the kprobe event. 
     User ID is in the lowest 32 bits (the top 32 bits is the group ID) */
     uid =bpf_get_current_uid_gid() & 0xFFFFFFFF; 
@@ -28,11 +29,17 @@ int hello_world(void *ctx) {
 
     return 0;
 }
+
+int count_openat(void *ctx) {
+    hello_world;
+    return 0;
+}
 """
 
 b = BPF(text=program)
 clone = b.get_syscall_fnname("clone")
 b.attach_kprobe(event=clone, fn_name="hello_world")
+b.attach_kprobe(event="__x64_sys_openat", fn_name="count_openat")
 
 while True:
     # loop every 2 secs to print the current state of the hash table
