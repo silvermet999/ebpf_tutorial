@@ -19,6 +19,7 @@ int hello_world(void *ctx) {
     User ID is in the lowest 32 bits (the top 32 bits is the group ID) */
     uid =bpf_get_current_uid_gid() & 0xFFFFFFFF; 
     p = clones.lookup(&uid); /* lookup a key matching the user ID */
+    
     /* if there's an entry, set the counter to the curr val in the hash table. 0 otherwise for both */
     if (p!=0) {
         counter = *p;
@@ -31,7 +32,20 @@ int hello_world(void *ctx) {
 }
 
 int count_openat(void *ctx) {
-    hello_world;
+    u64 uid;
+    u64 counter = 0;
+    u64 *p;
+    
+    uid =bpf_get_current_uid_gid() & 0xFFFFFFFF; 
+    p = clones.lookup(&uid); /* accessing same hash table */
+    
+    if (p!=0) {
+        counter = *p;
+    }
+    counter++;
+    /* update the hash table to the new counter val */
+    clones.update(&uid, &counter);
+
     return 0;
 }
 """
