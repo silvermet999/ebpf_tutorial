@@ -55,6 +55,8 @@ clone = b.get_syscall_fnname("clone")
 b.attach_kprobe(event=clone, fn_name="hello_world")
 b.attach_kprobe(event="__x64_sys_openat", fn_name="count_openat")
 
+# attach to sys_enter : b.attach_raw_tracepoint(tp="sys_enter", fn_name="hello_world")
+
 while True:
     # loop every 2 secs to print the current state of the hash table
     sleep(2)
